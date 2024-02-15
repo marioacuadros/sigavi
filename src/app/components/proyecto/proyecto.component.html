@@ -1,0 +1,324 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <h4 align = "center"><small class="text-muted">Gestión de proyectos</small></h4>
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-3" *ngIf ="solo_lectura==0">
+                    <a href="#" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addProyectos">
+                        <i class="fa fa-plus"></i>Adicionar proyecto
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-secondary" (click)="listProyecto()">
+                    <i class="fa fa-eye"></i>Ver todos
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" class="form-control" formControlName="palabraBuscar"
+                            [(ngModel)]="key"
+                            placeholder = "Digite la palabra o valor a buscar"
+                            >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                        <button type="button" class="btn btn-success" (click)="searchProyecto()"
+                            [disabled]="!filterForm.valid">
+                            <i class="fa fa-search"></i>Buscar
+                        </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de proyectos-->
+<section id="proyectos">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de proyectos</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Proyecto</td>
+                                <td>Tipo<br>inmueble</td>
+                                <td>Departamento - Municipio</td>
+                                <td>Vereda</td>
+                                <td>Cantidad<br>de lotes</td>
+                                <td *ngIf ="solo_lectura==0">Activo</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let proyecto of proyectos; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{proyecto.nombre}}</td>
+                                <td>{{proyecto.tipo}}</td>
+                                <td>{{proyecto.municipio}}</td>
+                                <td>{{proyecto.vereda}}</td>
+                                <td>{{proyecto.cantidad_lotes}}</td>
+                                <td *ngIf="proyecto.activo==1 && solo_lectura==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            checked (click)="changeState(proyecto)">
+                                    </div>
+                                </td>
+                                <td *ngIf="proyecto.activo==0 && solo_lectura==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            (click)="changeState(proyecto)">
+                                    </div>
+                                </td>
+                                <td >
+                                    <a *ngIf ="solo_lectura==0" 
+                                        routerLink="/proyecto" class="secondary-content"><i
+                                        (click)="getProyecto(proyecto)" class="fa fa-pencil"
+                                        data-toggle="modal" data-target="#addProyectos"></i></a>
+                                    &nbsp;
+                                    <a *ngIf ="solo_lectura==0"
+                                        routerLink="/proyecto" class="secondary-content"><i
+                                            (click)="delProyecto(proyecto)" class="fa fa-trash"></i></a>
+                                    &nbsp;
+                                    <a *ngIf="proyecto.latitud!=0" href = {{proyecto.strhref}} target="_blank">
+                                    <i class="fa fa-map-marker"></i></a>
+                                    &nbsp;
+                                    <a routerLink="/proyecto" class="secondary-content"><i
+                                        (click)="listArchivos(proyecto)" class="fa fa-file"
+                                        data-toggle="modal" data-target="#addDocuments"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar proyectos-->
+<div class="modal fade" id="addProyectos" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" *ngIf="!modoEdicion">
+                <h5 class="modal-title">Adicionar proyecto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-header" *ngIf="modoEdicion">
+                <h5 class="modal-title">Modificar proyecto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class = "row">
+                        <div class="col-8">
+                            <div class="form-group">
+                                <label for="proyecto">Nombre del proyecto</label>
+                                <input type="text" class="form-control" formControlName="proyecto"
+                                    [(ngModel)]="proyecto.nombre">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('proyecto')?.invalid && (addForm.get('proyecto')?.dirty || addForm.get('proyecto')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="numero">Número de aprobación</label>
+                                <input type="text" class="form-control" formControlName="numero"
+                                    [(ngModel)]="proyecto.numero_aprobacion">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="departamento">Departamento</label>
+                                <select class="custom-select custom-select-sm" formControlName="departamento"
+                                    [(ngModel)]="idDepartamento"
+                                    (change)="listMunicipio()">
+                                    <option [value]="10">CAUCA</option>
+                                    <option [value]="departamento.idDepartamento" *ngFor="let departamento of departamentos">{{ departamento.departamento }}</option>
+                                </select>
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('departamento')?.invalid && (addForm.get('departamento')?.dirty || addForm.get('departamento')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="municipio">Municipio</label>
+                                <select class="custom-select custom-select-sm" formControlName="municipio"
+                                    [(ngModel)]="proyecto.id_municipio">
+                                    <option [value]="municipio.idMunicipio" *ngFor="let municipio of municipios">{{ municipio.municipio }}</option>
+                                </select>
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('municipio')?.invalid && (addForm.get('municipio')?.dirty || addForm.get('departamento')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="vereda">Vereda</label>
+                                <input type="text" class="form-control" formControlName="vereda"
+                                    [(ngModel)]="proyecto.vereda">
+                            </div>
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class = "col-3">
+                            <div class="form-group">
+                                <label for="latitud">Latitud</label>
+                                <input type="number" class="form-control" formControlName="latitud"
+                                    [(ngModel)]="proyecto.latitud">
+                            </div>
+                        </div>
+                        <div class = "col-3">
+                            <div class="form-group">
+                                <label for="longitud">Longitud</label>
+                                <input type="number" class="form-control" formControlName="longitud"
+                                    [(ngModel)]="proyecto.longitud">
+                            </div>
+                        </div>
+                        <div class = "col-3">
+                            <div class="form-group">
+                                <label for="valor">Valor del proyecto</label>
+                                <input type="number" class="form-control" formControlName="valor"
+                                    [(ngModel)]="proyecto.valor">
+                            </div>
+                        </div>
+                    </div>
+                    <div class=" row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="cantidad">Cantidad</label>
+                                <input type="number" class="form-control" formControlName="cantidad"
+                                    [(ngModel)]="proyecto.cantidad_lotes">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('cantidad')?.invalid && (addForm.get('cantidad')?.dirty || addForm.get('cantidad')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="tipo">Tipo de inmueble</label>
+                                <select class="custom-select custom-select-sm" formControlName="tipo"
+                                    [(ngModel)]="proyecto.id_tipo">
+                                    <option [value]="tipo.id" *ngFor="let tipo of tipos">{{ tipo.detalle }}</option>
+                                </select>
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('tipo')?.invalid && (addForm.get('tipo')?.dirty || addForm.get('tipo')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer" *ngIf="!modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addProyecto()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+            <div class="modal-footer" *ngIf="modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="updateProyecto()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Ventana modal cargar documentos-->
+<div class="modal fade" id="addDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Documentos del proyecto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="fileForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <p><b>Proyecto:</b> {{proyecto.nombre}}</p>
+                        </div>
+                        <div class="col-4">
+                            <p><b>Municipio:</b> {{proyecto.municipio}}</p>
+                        </div>
+                        <div class="col-4">
+                            <p><b>Vereda:</b> {{proyecto.vereda}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!---->
+                            <table class="table table-striped">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <td>#</td>
+                                        <td>Descripcion</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let archivo of archivos; let i = index">
+                                        <td>{{i+1}}</td>
+                                        <td>{{archivo.descripcion}}</td>
+                                        <td>
+                                            <a routerLink="/proyecto" class="secondary-content"><i
+                                                    (click)="delArchivo(archivo.id, proyecto)" class="fa fa-trash"></i></a>
+                                            &nbsp;
+                                            <a href = {{archivo.nombre}} target="_blank"><i class="fa fa-eye"></i></a>
+                                    </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+        
+                            <!---->
+                        </div>
+                    </div>
+                    <div class = "row" *ngIf ="solo_lectura==0">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="descripcion">Descripción</label>
+                                <input type="text" class="form-control" formControlName="descripcion"
+                                    [(ngModel)]="archivo.descripcion">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('descripcion')?.invalid && (addForm.get('descripcion')?.dirty || addForm.get('descripcion')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="formFile" class="form-label">Archivo: (Tipo .pdf)</label>
+                                <input class="form-control" 
+                                    type="file"
+                                    formControlName="strFile"
+                                    (change)="loadFile($event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

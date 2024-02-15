@@ -1,0 +1,113 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <h4 align="center"><small class="text-muted">Gestionar caja diaria</small></h4>
+        <div class="row">
+            <div class="col-md-3">
+                <a href="#" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addSalida">
+                    <i class="fa fa-plus"></i>Crear salida
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Lista de proyectos-->
+<section id="proyectos">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h5>Salidas {{fecha}}</h5>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td style="width: 10%">#</td>
+                                <td style="width: 50%" align="center">Descripción</td>
+                                <td style="width: 20%" align="center">Valor</td>
+                                <td style="width: 20%"></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let salida of salidas; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{salida.descripcion}}</td>
+                                <td align="right">{{salida.valor | number}}</td>
+                                <td>
+                                    <a routerLink="/salidaCaja" class="secondary-content"><i (click)="getSalida(salida)"
+                                            class="fa fa-pencil" data-toggle="modal" data-target="#addSalida"></i></a>
+                                    &nbsp;
+                                    <a routerLink="/salidaCaja" class="secondary-content"><i (click)="delSalida(salida)"
+                                            class="fa fa-trash"></i></a>
+                                    &nbsp;
+                                    <a routerLink="/salidaCaja" class="secondary-content"><i
+                                        (click)="printSalida(salida)" class="fa fa-print"></i></a>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar proyectos-->
+<div class="modal fade" id="addSalida" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" *ngIf="!modoEdicion">
+                <h5 class="modal-title">Crear pago o salida de dinero</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-header" *ngIf="modoEdicion">
+                <h5 class="modal-title">Modificar pago o salida de dinero</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="form-group">
+                                <label for="descripcion">Descripción del pago</label>
+                                <input type="text" class="form-control" formControlName="descripcion"
+                                    [(ngModel)]="salida.descripcion">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('descripcion')?.invalid && (addForm.get('descripcion')?.dirty || addForm.get('descripcion')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="valor">Valor</label>
+                                <input type="number" class="form-control" formControlName="valor"
+                                    [(ngModel)]="salida.valor">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('valor')?.invalid && (addForm.get('valor')?.dirty || addForm.get('valor')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer" *ngIf="!modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addSalida()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+            <div class="modal-footer" *ngIf="modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="updateSalida()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

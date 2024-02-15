@@ -1,0 +1,294 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <h4 align = "center"><small class="text-muted">{{tituloReporte}}</small></h4>
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label for="fechaInicio">Desde</label>
+                        <input type="date" class="form-control" formControlName="fechaInicio"
+                            [(ngModel)]="fechaInicio"
+                            (change)="list()">
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label for="fechaFin">Hasta</label>
+                        <input type="date" class="form-control" formControlName="fechaFin"
+                            [(ngModel)]="fechaFin"
+                            (change)="list()">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <!--<br><button type="button" class="btn btn-success" (click)="list()">
+                        <i class="fa fa-search"></i>Buscar
+                    </button>-->
+                </div>
+                <div class="col-md-2">
+                    <br><button type="button" class="btn btn-success" (click)="exportAsXLSX()">
+                        <i class="fa fa-download"></i>Descargar
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</section>
+<!--Reporte ventas-->
+<section id="reporte" *ngIf="idTipoReporte==1">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Ventas</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Tipo</td>
+                                <td>Numero</td>
+                                <td>Proyecto</td>
+                                <td>Cliente</td>
+                                <td>Asesor</td>
+                                <td>Valor</td>
+                                <td>Abono</td>
+                                <td>Saldo</td>
+                                <td>Fecha</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let resultado of resultados; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{resultado.Tipo}}</td>
+                                <td>{{resultado.Numero}}</td>
+                                <td>{{resultado.Proyecto}}</td>
+                                <td>{{resultado.Cliente}}</td>
+                                <td>{{resultado.Asesor}}</td>
+                                <td>{{resultado.Valor | number}}</td>
+                                <td>{{resultado.Abono | number}}</td>
+                                <td>{{resultado.Saldo | number}}</td>
+                                <td>{{resultado.Fecha}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Reporte devoluciones-->
+<section id="reporte" *ngIf="idTipoReporte==2">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Devoluciones</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Tipo</td>
+                                <td>Numero</td>
+                                <td>Proyecto</td>
+                                <td>Cliente</td>
+                                <td>Asesor</td>
+                                <td>Valor Devuelto</td>
+                                <td>Valor Inmueble</td>
+                                <td>Fecha</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let resultado of resultados; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{resultado.Tipo}}</td>
+                                <td>{{resultado.Numero}}</td>
+                                <td>{{resultado.Proyecto}}</td>
+                                <td>{{resultado.Cliente}}</td>
+                                <td>{{resultado.Asesor}}</td>
+                                <td>{{resultado.Valor_Devuelto | number}}</td>
+                                <td>{{resultado.Valor_Inmueble | number}}</td>
+                                <td>{{resultado.Fecha }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Reporte traslados-->
+<section id="reporte" *ngIf="idTipoReporte==3">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Traslados</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Tipo</td>
+                                <td>Numero</td>
+                                <td>Proyecto</td>
+                                <td>Titular Anterior</td>
+                                <td>Nuevo Titular</td>
+                                <td>Valor Inmueble</td>
+                                <td>Valor Traslado</td>
+                                <td>Fecha</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let resultado of resultados; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{resultado.Tipo}}</td>
+                                <td>{{resultado.Numero}}</td>
+                                <td>{{resultado.Proyecto}}</td>
+                                <td>{{resultado.Titular_Anterior}}</td>
+                                <td>{{resultado.Nuevo_Titular}}</td>
+                                <td align="right">{{resultado.Valor_Inmueble | number}}</td>
+                                <td align="right">{{resultado.Valor_Traslado | number}}</td>
+                                <td>{{resultado.Fecha }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Reporte pagos -->
+<section id="reporte" *ngIf="idTipoReporte==4">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Pagos</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Tipo</td>
+                                <td>Numero</td>
+                                <td>Proyecto</td>
+                                <td>Cliente</td>
+                                <td>Asesor</td>
+                                <td>Pago</td>
+                                <td>Valor Inmueble</td>
+                                <td>Saldo</td>
+                                <td>Fecha</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let resultado of resultados; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{resultado.Tipo}}</td>
+                                <td>{{resultado.Numero}}</td>
+                                <td>{{resultado.Proyecto}}</td>
+                                <td>{{resultado.Cliente}}</td>
+                                <td>{{resultado.Asesor}}</td>
+                                <td align="right">{{resultado.Pago | number}}</td>
+                                <td align="right">{{resultado.Valor_Inmueble | number}}</td>
+                                <td align="right">{{resultado.Saldo | number}}</td>
+                                <td>{{resultado.Fecha }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Reporte pago comision-->
+<section id="reporte" *ngIf="idTipoReporte==5">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Pago de comisiones</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Tipo</td>
+                                <td>Numero</td>
+                                <td>Proyecto</td>
+                                <td>Asesor</td>
+                                <td>Valor Inmueble</td>
+                                <td>Comisión</td>
+                                <td>Valor Abonado</td>
+                                <td>Pago</td>
+                                <td>Saldo</td>
+                                <td>Fecha</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let resultado of resultados; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{resultado.Tipo}}</td>
+                                <td>{{resultado.Numero}}</td>
+                                <td>{{resultado.Proyecto}}</td>
+                                <td>{{resultado.Asesor}}</td>
+                                <td align="right">{{resultado.Valor_Inmueble | number}}</td>
+                                <td align="right">{{resultado.Comision | number}}</td>
+                                <td align="right">{{resultado.Valor_Abonado | number}}</td>
+                                <td align="right">{{resultado.Pago | number}}</td>
+                                <td align="right">{{resultado.Saldo | number}}</td>
+                                <td>{{resultado.Fecha }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Reporte cierre diario-->
+<section id="reporte" *ngIf="idTipoReporte==6">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Cierre Diario</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td align="center">Entrada</td>
+                                <td align="center">Salida</td>
+                                <td align="center">Excedente</td>
+                                <td align="center">Fecha</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let resultado of resultados; let i = index">
+                                <td>{{i+1}}</td>
+                                <td align="right">{{resultado.Entrada | number}}</td>
+                                <td align="right">{{resultado.Salida | number}}</td>
+                                <td align="right">{{resultado.Excedente | number}}</td>
+                                <td td align="center">{{resultado.Fecha }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

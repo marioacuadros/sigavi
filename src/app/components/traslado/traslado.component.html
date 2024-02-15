@@ -1,0 +1,67 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <h4 align = "center"><small class="text-muted">Traslados</small></h4>
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <!--<label for="proyecto">Proyecto</label>-->
+                        <select class="custom-select custom-select-sm" formControlName="proyecto"
+                            [(ngModel)]="id_proyecto"
+                            (change)="list(id_proyecto)">
+                            <option [value]="0">Seleccione el proyecto</option>
+                            <option [value]="proyecto.id_proyecto" *ngFor="let proyecto of proyectos">{{ proyecto.proyecto }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de lotes-->
+<section id="lotes">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de traslados del proyecto</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td align="center">#</td>
+                                <td align="center">Proyecto</td>
+                                <td align="center">Numero</td>
+                                <td align="center">Comprador anterior</td>
+                                <td align="center">Nuevo comprador</td>
+                                <td align="center">Valor traslado</td>
+                                <td align="center">Valor inmueble</td>
+                                <td align="center">Fecha</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let lote of lotes; let i = index">
+                                <td align="center">{{i+1}}</td>
+                                <td align="center">{{lote.proyecto}}</td>
+                                <td align="center">{{lote.numero | number}}</td>
+                                <td align="left">{{lote.anterior}}</td>
+                                <td align="left">{{lote.nuevo}}</td>
+                                <td align="right">{{lote.valor_traslado | number}}</td>
+                                <td align="right">{{lote.valor_lote | number}}</td>
+                                <td align="center">{{lote.fecha}}</td>
+                                <td *ngIf="solo_lectura==0">
+                                    <a routerLink="/traslado" class="secondary-content"><i
+                                        (click)="prnTraslado(lote)" class="fa fa-print"
+                                        ></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

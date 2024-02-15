@@ -1,0 +1,186 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <h4 align = "center"><small class="text-muted">Gestionar ventas</small></h4>
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <!--<label for="proyecto">Proyecto</label>-->
+                        <select class="custom-select custom-select-sm" formControlName="proyecto"
+                            [(ngModel)]="venta.id_proyecto"
+                            (change)="listLoteLibre(venta.id_proyecto, idLote)"
+                            >
+                            <option [value]="0">Seleccione el proyecto</option>
+                            <option [value]="proyecto.id" *ngFor="let proyecto of proyectos">{{ proyecto.nombre }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <!--<label for="proyecto">Proyecto</label>-->
+                        <select class="custom-select custom-select-sm" formControlName="lote"
+                            [(ngModel)]="idLote"
+                            (change)="listLoteLibre(venta.id_proyecto, idLote)"
+                            >
+                            <option [value]="0">Seleccione el inmueble</option>
+                            <option [value]="lote.id" *ngFor="let lote of lotes">{{ lote.numero }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de lotes-->
+<section id="lotes">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de lotes para la venta del proyecto</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td align="center">#</td>
+                                <td align="center">Proyecto</td>
+                                <td align="center">Numero</td>
+                                <td align="center">Tamaño</td>
+                                <td align="center">Valor comercial</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let lote of lotes; let i = index">
+                                <td align="center">{{i+1}}</td>
+                                <td align="center">{{lote.proyecto}}</td>
+                                <td align="center">{{lote.numero | number}}</td>
+                                <td align="center">{{lote.tamano | number}}</td>
+                                <td align="center">{{lote.valor | number}}</td>
+                                <td *ngIf="solo_lectura==0">
+                                    <a routerLink="/venta" class="secondary-content"><i
+                                        (click)="getLote(lote)" class="fa fa-money"
+                                        data-toggle="modal" data-target="#addVenta"></i></a>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar venta-->
+<div class="modal fade" id="addVenta" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Realizar venta</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div>
+                        <div class = "row">
+                            <div class="col-6">
+                                <p><b>Proyecto: </b>{{loteVenta.proyecto}}</p>
+                            </div>
+                            <div class="col-3">
+                                <p><b>Número: </b>{{loteVenta.numero}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class="col-4">
+                            <p><b> Valor del inmueble: </b>{{loteVenta.valor | number}}
+                            </p>
+                        </div>
+                        <div class="col-4">
+                            <p><b> Valor de la comisión: </b>{{loteVenta.comision | number}}
+                            </p>
+                        </div>
+                        <div class="col-4">
+                            <p><b> Tipo: </b>{{loteVenta.tipo}}
+                            </p>
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class="col-4">
+                            <h6>Comprador</h6>
+                            <div class="form-group">
+                                <input type="number" class="form-control" formControlName="idAsociado"
+                                    [(ngModel)]="venta.id_asociado"
+                                    placeholder="Documento del comprador"
+                                    >
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('idAsociado')?.invalid && (addForm.get('idAsociado')?.dirty || addForm.get('idAsociado')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-2">
+                            <br><button type="button" class="btn btn-success" (click)="getAsociado(venta.id_asociado)">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <p><b>Nombre:</b> </p>
+                            <p>{{venta.asociado}}</p>
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class="col-4">
+                            <h6>Vendedor</h6>
+                            <div class="form-group">
+                                <input type="number" class="form-control" formControlName="idAsesor"
+                                    [(ngModel)]="venta.id_asesor"
+                                    placeholder="Documento del vendedor"
+                                    >
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('idAsesor')?.invalid && (addForm.get('idAsesor')?.dirty || addForm.get('idAsesor')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-2">
+                            <br><button type="button" class="btn btn-success" (click)="getAsesor(venta.id_asesor)">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <p><b>Nombre:</b> </p>
+                            <p>{{venta.asesor}}</p>
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class="col-4">
+                            <h6>Información de pago</h6>
+                            <div class="form-group">
+                                <input type="number" class="form-control" formControlName="pago"
+                                    [(ngModel)]="venta.pago"
+                                    placeholder="Valor pagado"
+                                    >
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('pago')?.invalid && (addForm.get('pago')?.dirty || addForm.get('pago')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addVenta()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

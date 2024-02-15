@@ -1,0 +1,177 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <h4 align = "center"><small class="text-muted">Gestionar items del menú</small></h4>
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-3">
+                    <a href="#" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addItems">
+                        <i class="fa fa-plus"></i>Adicionar item
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-secondary" (click)="listItem()">
+                    <i class="fa fa-eye"></i>Ver todos
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <!--<label for="palabra">Palabra clave</label>-->
+                        <input type="text" class="form-control" formControlName="palabraBuscar"
+                            [(ngModel)]="key"
+                            placeholder = "Digite la palabra o valor a buscar"
+                            >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                        <button type="button" class="btn btn-success" (click)="searchItem()"
+                            [disabled]="!filterForm.valid">
+                        <i class="fa fa-search"></i>Buscar
+                        </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de items-->
+<section id="items">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de items</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Id</td>
+                                <td>Item</td>
+                                <td>Componente</td>
+                                <td>Padre</td>
+                                <td>Bloque</td>
+                                <td>Orden</td>
+                                <td>Activo</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of items; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{item.id}}</td>
+                                <td>{{item.item}}</td>
+                                <td>{{item.componente}}</td>
+                                <td>{{item.padre}}</td>
+                                <td>{{item.bloque}}</td>
+                                <td>{{item.orden}}</td>
+                                <td *ngIf="item.activo==1">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            checked (click)="changeState(item)">
+                                    </div>
+                                </td>
+                                <td *ngIf="item.activo==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            (click)="changeState(item)">
+                                    </div>
+                                </td>
+                                <td>
+                                    <a routerLink="/item" class="secondary-content"><i
+                                            (click)="getItem(item)" class="fa fa-pencil"
+                                            data-toggle="modal" data-target="#addItems"></i></a>
+                                    <a routerLink="/item" class="secondary-content"><i
+                                            (click)="delItem(item)" class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar-->
+<div class="modal fade" id="addItems" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" *ngIf="!modoEdicion">
+                <h5 class="modal-title">Adicionar item de menú</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-header" *ngIf="modoEdicion">
+                <h5 class="modal-title">Modificar item de menú</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="item">Item a mostrar</label>
+                        <input type="text" class="form-control" formControlName="item"
+                            [(ngModel)]="item.item">
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="addForm.get('item')?.invalid && (addForm.get('item')?.dirty || addForm.get('item')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="componente">Ruta del componente</label>
+                        <input type="text" class="form-control" formControlName="componente"
+                            [(ngModel)]="item.componente">
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="addForm.get('componente')?.invalid && (addForm.get('componente')?.dirty || addForm.get('componente')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="padre">Item padre</label>
+                        <select class="custom-select custom-select-sm" formControlName="padre"
+                            [(ngModel)]="item.padre">
+                            <option [value]="0">Ninguno</option>
+                            <option [value]="itemPadre.id" *ngFor="let itemPadre of itemsPadre">{{ itemPadre.item }}</option>
+                        </select>
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="addForm.get('padre')?.invalid && (addForm.get('padre')?.dirty || addForm.get('padre')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="bloque">Bloque en donde se muestra (Horizontal)</label>
+                        <input type="number" class="form-control" formControlName="bloque"
+                            [(ngModel)]="item.bloque">
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="addForm.get('bloque')?.invalid && (addForm.get('bloque')?.dirty || addForm.get('bloque')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="orden">Órden de item (Vertical)</label>
+                        <input type="number" class="form-control" formControlName="orden"
+                            [(ngModel)]="item.orden">
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="addForm.get('orden')?.invalid && (addForm.get('orden')?.dirty || addForm.get('orden')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+            <div class="modal-footer" *ngIf="!modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addItem()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+            <div class="modal-footer" *ngIf="modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="updateItem()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

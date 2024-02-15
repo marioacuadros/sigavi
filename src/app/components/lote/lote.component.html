@@ -1,0 +1,295 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <h4 align = "center"><small class="text-muted">Gestión de inmuebles</small></h4>
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <!--<label for="proyecto">Proyecto</label>-->
+                        <select class="custom-select custom-select-sm" formControlName="proyecto"
+                            [(ngModel)]="lote.id_proyecto"
+                            (change)="listLote(lote.id_proyecto)"
+                            >
+                            <option [value]="0">Seleccione el proyecto</option>
+                            <option [value]="proyecto.id" *ngFor="let proyecto of proyectos">{{ proyecto.nombre }}</option>
+                        </select>
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="addForm.get('proyecto')?.invalid && (addForm.get('proyecto')?.dirty || addForm.get('proyecto')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" *ngIf="solo_lectura==0">
+                    <a href="#" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addLotes">
+                        <i class="fa fa-plus"></i>Adicionar inmueble
+                    </a>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" formControlName="palabraBuscar"
+                            [(ngModel)]="key"
+                            placeholder = "Digite la palabra o valor a buscar"
+                            >
+                    </div>
+                </div>
+                <div class="col-md-2">
+                        <button type="button" class="btn btn-success" (click)="searchLote()"
+                            [disabled]="!filterForm.valid">
+                            <i class="fa fa-search"></i>Buscar
+                        </button>
+                </div>
+                <div class="col-md-3" *ngIf="solo_lectura==0">
+                    <div class="form-group">
+                        <!--<label for="formFile" class="form-label">Archivo de lotes (Tipo .CSV)</label>-->
+                        <input class="form-control" 
+                            type="file"
+                            formControlName="strFile"
+                            (change)="cargarLote($event)">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de lotes-->
+<section id="lotes">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de inmuebles del proyecto</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td align="center">#</td>
+                                <td align="center">Numero</td>
+                                <td align="center">Tamaño</td>
+                                <td align="center">Valor comercial</td>
+                                <td align="center">Estado</td>
+                                <td *ngIf="solo_lectura==0">Activo</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let lote of lotes; let i = index">
+                                <td align="center">{{i+1}}</td>
+                                <td align="center">{{lote.numero | number}}</td>
+                                <td align="center">{{lote.tamano | number}}</td>
+                                <td align="center">{{lote.valor | number}}</td>
+                                <td align="center">{{lote.estado }}</td>
+                                <td *ngIf="lote.activo==1 && solo_lectura==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            checked (click)="changeState(lote)">
+                                    </div>
+                                </td>
+                                <td *ngIf="lote.activo==0 && solo_lectura==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            (click)="changeState(lote)">
+                                    </div>
+                                </td>
+                                <td *ngIf="solo_lectura==0">
+                                    <a routerLink="/lote" class="secondary-content"><i
+                                        (click)="getLote(lote)" class="fa fa-pencil"
+                                        data-toggle="modal" data-target="#addLotes"></i></a>
+                                    &nbsp;
+                                    <a routerLink="/lote" class="secondary-content"><i
+                                            (click)="delLote(lote)" class="fa fa-trash"></i></a>
+                                    &nbsp;
+                                    <a routerLink="/lote" class="secondary-content"><i
+                                        (click)="listArchivos(lote)" class="fa fa-file"
+                                        data-toggle="modal" data-target="#addDocuments"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar lotes-->
+<div class="modal fade" id="addLotes" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" *ngIf="!modoEdicion">
+                <h5 class="modal-title">Adicionar inmueble</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-header" *ngIf="modoEdicion">
+                <h5 class="modal-title">Modificar inmueble</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class = "row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="numero">Número</label>
+                                <input type="number" class="form-control" formControlName="numero"
+                                    [(ngModel)]="lote.numero">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('numero')?.invalid && (addForm.get('numero')?.dirty || addForm.get('numero')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="tamano">Tamaño</label>
+                                <input type="number" class="form-control" formControlName="tamano"
+                                    [(ngModel)]="lote.tamano">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('tamano')?.invalid && (addForm.get('tamano')?.dirty || addForm.get('tamano')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="valor">Valor comercial</label>
+                                <input type="number" class="form-control" formControlName="valor"
+                                    [(ngModel)]="lote.valor">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('valor')?.invalid && (addForm.get('valor')?.dirty || addForm.get('valor')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="estado">Estado</label>
+                                <select class="custom-select custom-select-sm" formControlName="estado"
+                                    [(ngModel)]="lote.id_estado">
+                                    <option [value]="estado.id" *ngFor="let estado of estados">{{ estado.detalle }}</option>
+                                </select>
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('estado')?.invalid && (addForm.get('estado')?.dirty || addForm.get('estado')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="comision">Valor comision</label>
+                                <input type="number" class="form-control" formControlName="comision"
+                                    [(ngModel)]="lote.comision">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('comision')?.invalid && (addForm.get('comision')?.dirty || addForm.get('comision')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer" *ngIf="!modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addLote()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+            <div class="modal-footer" *ngIf="modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="updateLote()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Ventana modal cargar documentos-->
+<div class="modal fade" id="addDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cargar documentos</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="fileForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class = "col-6">
+                            <p><b>Proyecto:</b> {{lote.proyecto}}</p>
+                        </div>
+                        <div class="col-4">
+                            <p><b>Numero:</b> {{lote.numero}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <p><b>Valor:</b> {{lote.valor}}</p>
+                        </div>
+                        <div class="col-4">
+                            <p><b>Estado:</b> {{lote.estado}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-striped">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <td>#</td>
+                                        <td>Descripcion</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let archivo of archivos; let i = index">
+                                        <td>{{i+1}}</td>
+                                        <td>{{archivo.descripcion}}</td>
+                                        <td>
+                                            <a routerLink="/lote" class="secondary-content"><i
+                                                    (click)="delArchivo(archivo.id, lote)" class="fa fa-trash"></i></a>
+                                            &nbsp;
+                                            <a href = {{archivo.nombre}} target="_blank"><i class="fa fa-eye"></i></a>
+                                    </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <h5>Informacion de documento a cargar</h5>
+                    <div class = "row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="descripcion">Descripción</label>
+                                <input type="text" class="form-control" formControlName="descripcion"
+                                    [(ngModel)]="archivo.descripcion">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('descripcion')?.invalid && (addForm.get('descripcion')?.dirty || addForm.get('descripcion')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="formFile" class="form-label">Archivo: (Tipo .pdf)</label>
+                                <input class="form-control" 
+                                    type="file"
+                                    formControlName="strFile"
+                                    (change)="loadFile($event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

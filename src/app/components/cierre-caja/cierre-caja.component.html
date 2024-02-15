@@ -1,0 +1,101 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <h4 align = "center"><small class="text-muted">Cierre Diario</small></h4>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-heard">
+                        <h5>Entrada</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><b>Entrada por pagos:  </b>{{resumen.pago_lote | number}}</p>
+                    </div>
+                    <button type="button" class="btn btn-primary" (click)="addCierre()" [disabled]="cerrado">
+                     Aplicar cierre</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-heard">
+                        <h5>Salida</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><b>Pago de comisiones:   </b>{{resumen.pago_comision | number}}</p>
+                        <p><b>Devoluciones:   </b>{{resumen.devolucion | number}}</p>
+                        <p><b>Otras salidas:   </b>{{resumen.salida | number}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-heard">
+                        <h5>Excedente</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><b>Entrada -  Salida: </b>{{resumen.total | number}}</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!--Lista de pagos-->
+<section id="pagos">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Entradas</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td> No Documento</td>
+                                <td>Concepto</td>
+                                <td>Valor</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let pago of pagos; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{pago.id_asociado}}</td>
+                                <td>Abono {{pago.tipo}} número {{pago.numero}}, cliente {{pago.asociado}}</td>
+                                <td align="right">{{pago.valor | number}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Salidas</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Concepto</td>
+                                <td>Valor</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let salida of salidas; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{salida.concepto}}</td>
+                                <td>{{salida.valor | number}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

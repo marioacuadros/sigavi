@@ -1,0 +1,33 @@
+<section class="vh-100">
+    <div class="container py-5 h-80">
+        <div class="row d-flex align-items-center justify-content-center h-100">
+            <div class="col-md-6 col-lg-7 col-xl-6">
+                <img src="assets/images/login.png" class="img-fluid" alt="Phone image">
+            </div>
+            <div class="col-md-6 col-lg-5 col-xl-5 offset-xl-1">
+                <form [formGroup]="loginForm">
+                    <!-- Email input -->
+                    <div class="form-group">
+                        <label for="email">E-Mail</label>
+                        <input type="text" class="form-control" formControlName="email" [(ngModel)]="email">
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <!-- Password input -->
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" formControlName="password" [(ngModel)]="password">
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" (click)="login()">Sign in</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

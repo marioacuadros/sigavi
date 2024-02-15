@@ -1,0 +1,55 @@
+<!--
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <img class="marginauto" src="assets/images/colapse.png">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+        <ul class="navbar-nav">
+          <li *ngFor="let padre of padres" class="nav-item dropdown">
+            <button *ngIf="padre.padre==0" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              {{padre.item}}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark">
+              <li *ngFor="let hijo of hijos"><a class="dropdown-item" *ngIf="hijo.padre ==padre.id" routerLink="{{hijo.componente}}">{{ hijo.item }}</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+-->
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container-fluid">
+    <ul class="nav nav-tabs" *ngIf = "logueado">
+      <li class="nav-item">
+        <a class="nav-link toggle" routerLink="/home" href="#">Inicio</a>
+      </li>
+      <li class="nav-item dropdown" *ngFor="let padre of padres">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false"
+          *ngIf="padre.padre==0">{{padre.item}}</a>
+        <div class="dropdown-menu">
+          <div *ngFor="let hijo of hijos">
+            <a class="dropdown-item" *ngIf="hijo.padre ==padre.id" routerLink="{{hijo.componente}}">{{ hijo.item }}</a>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <ul class="navbar-nav ml-auto">
+      <li *ngIf="logueado==false" class="nav-item">
+        <a class="nav-link" routerLink="/login">
+          <i class="fa fa-user"></i>Login
+        </a>
+      </li>
+      <li *ngIf="logueado==true" class="nav-item">
+        <a class="navbar-brand" href="#">
+          <button class="btn btn-dark" (click)="exit()"><i i class="fa fa-user-circle"></i>{{usuario.usuario}} Salir</button>
+        </a>
+      </li>
+        
+    </ul>
+  </div>
+</nav>

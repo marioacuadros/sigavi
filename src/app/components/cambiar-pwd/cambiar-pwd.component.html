@@ -1,0 +1,33 @@
+<section class="vh-100">
+    <div class="container py-5 h-80">
+        <div class="row d-flex align-items-center justify-content-center h-100">
+            <div class="col-md-6 col-lg-7 col-xl-6">
+                <img src="assets/images/change_pwd.png" class="img-fluid" alt="Phone image">
+            </div>
+            <div class="col-md-6 col-lg-5 col-xl-5 offset-xl-1">
+                <form [formGroup]="changeForm">
+                    <!-- Pwd input -->
+                    <div class="form-group">
+                        <label for="pwd">Nueva contraseña</label>
+                        <input type="password" class="form-control" formControlName="pwd" [(ngModel)]="pwd">
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="changeForm.get('pwd')?.invalid && (changeForm.get('pwd')?.dirty || changeForm.get('pwd')?.touched)">
+                            Mínimo 8 carácteres, incluya al menos un número, una minúscula y una mayúscula
+                        </div>
+                    </div>
+                    <!-- Comfirm input -->
+                    <div class="form-group">
+                        <label for="comfirm">Confirmar contraseña</label>
+                        <input type="password" class="form-control" formControlName="comfirm" [(ngModel)]="comfirm">
+                        <div class="alert alert-danger" role="alert"
+                            *ngIf="changeForm.get('comfirm')?.invalid && (changeForm.get('comfirm')?.dirty || changeForm.get('comfirm')?.touched)">
+                            Este campo es requerido
+                        </div>
+                    </div>
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" (click)="change()">Cambiar contraseña</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

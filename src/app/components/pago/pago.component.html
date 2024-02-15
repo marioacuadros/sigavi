@@ -1,0 +1,252 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <h4 align = "center"><small class="text-muted">Gestionar pagos</small></h4>
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <!--<label for="proyecto">Proyecto</label>-->
+                        <select class="custom-select custom-select-sm" formControlName="proyecto"
+                            [(ngModel)]="pago.id_proyecto"
+                            (change)="listLote(pago.id_proyecto, idLote)"
+                            >
+                            <option [value]="0">Seleccione el proyecto</option>
+                            <option [value]="proyecto.id" *ngFor="let proyecto of proyectos">{{ proyecto.nombre }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <!--<label for="proyecto">Proyecto</label>-->
+                        <select class="custom-select custom-select-sm" formControlName="lote"
+                            [(ngModel)]="idLote"
+                            (change)="listLote(pago.id_proyecto, idLote)"
+                            >
+                            <option [value]="0">Seleccione el inmueble</option>
+                            <option [value]="lote.id" *ngFor="let lote of lotes">{{ lote.numero }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de lotes-->
+<section id="lotes">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de inmuebles del proyecto</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td align="center">#</td>
+                                <td align="center">Proyecto</td>
+                                <td align="center">Numero</td>
+                                <td align="center">Asociado</td>
+                                <td align="center">Valor pagado</td>
+                                <td align="center">Valor total</td>
+                                <td align="center">Saldo</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let lote of lotes; let i = index">
+                                <td align="center">{{i+1}}</td>
+                                <td align="center">{{lote.proyecto}}</td>
+                                <td align="center">{{lote.numero | number}}</td>
+                                <td align="left">{{lote.asociado}}</td>
+                                <td align="right">{{lote.valor_pagado | number}}</td>
+                                <td align="right">{{lote.valor_lote | number}}</td>
+                                <td align="right">{{lote.saldo | number}}</td>
+                                <td *ngIf="solo_lectura==0">
+                                    <a routerLink="/pago" class="secondary-content"><i
+                                        (click)="listPago(lote)" class="fa fa-eye"
+                                        data-toggle="modal" data-target="#listPagos"></i></a>
+                                    &nbsp;
+                                    <a routerLink="/pago" class="secondary-content"><i
+                                        (click)="returnLote(lote)" class="fa fa-arrow-left"
+                                        ></i></a>
+                                        &nbsp;
+                                    <a routerLink="/pago" class="secondary-content"><i
+                                        (click)="traspaseLote(lote)" class="fa fa-user-plus"
+                                        data-toggle="modal" data-target="#traspaso"></i></a>
+                                    </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar venta-->
+<div class="modal fade" id="listPagos" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Realizar pago</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div>
+                        <div class = "row">
+                            <div class="col-4">
+                                <p><b>Proyecto: </b>{{pago.proyecto}}</p>
+                            </div>
+                            <div class="col-2">
+                                <p><b>Lote #: </b>{{pago.numero}}</p>
+                            </div>
+                            <div class="col-3">
+                                <p><b> Valor: </b>{{pago.valorLote | number}}
+                                </p>
+                            </div>
+                            <div class="col-3">
+                                <p><b> Saldo: </b>{{pago.saldo | number}}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class="col-md-6">
+
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class="col-md-12">
+                            <h4>Listado de pagos del inmueble</h4>
+                        <table class="table table-striped">
+                            <thead class="thead-light">
+                                <tr>
+                                    <td align="center">#</td>
+                                    <td align="center">Fecha</td>
+                                    <td align="center">Valor</td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let pago of pagos; let i = index">
+                                    <td align="center">{{i+1}}</td>
+                                    <td align="center">{{pago.fecha}}</td>
+                                    <td align="center">{{pago.pago | number}}</td>
+                                    <td>
+                                        <a routerLink="/pago" class="secondary-content"><i
+                                            (click)="printPago(pago)" class="fa fa-print"
+                                            data-toggle="modal" data-target="#listPagos"></i></a>
+                                        &nbsp;
+                                        <a routerLink="/pago" class="secondary-content"><i (click)="delPago(pago)"
+                                            class="fa fa-trash"></i></a>
+        
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                        </div>
+                    <div class = "row">
+                    </div>
+                    <div class = "row">
+                        <div class="col-4">
+                            <h6>Información de pago</h6>
+                            <div class="form-group">
+                                <input type="number" class="form-control" formControlName="pago"
+                                    [(ngModel)]="pago.pago"
+                                    placeholder="Valor pagado"
+                                    >
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('pago')?.invalid && (addForm.get('pago')?.dirty || addForm.get('pago')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addPago()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Ventana modal traspaso-->
+<div class="modal fade" id="traspaso" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Realizar traspaso de inmueble</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addTraspase">
+                <div class="modal-body">
+                    <div>
+                        <div class = "row">
+                            <div class="col-4">
+                                <p><b>Proyecto: </b>{{traspaso.proyecto}}</p>
+                            </div>
+                            <div class="col-2">
+                                <p><b>Lote #: </b>{{traspaso.numero}}</p>
+                            </div>
+                            <div class="col-3">
+                                <p><b> Valor: </b>{{traspaso.valorLote | number}}
+                                </p>
+                            </div>
+                            <div class="col-3">
+                                <p><b> Saldo: </b>{{traspaso.saldo | number}}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class="col-md-6">
+                            <p><b>Asociado: </b>{{traspaso.asociado}}</p>
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class="col-4">
+                            <h6>Comprador</h6>
+                            <div class="form-group">
+                                <input type="number" class="form-control" formControlName="idNuevo"
+                                    [(ngModel)]="idAsociado"
+                                    placeholder="Documento del nuevo comprador"
+                                    >
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('idNuevo')?.invalid && (addForm.get('idNuevo')?.dirty || addForm.get('idNuevo')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <br><button type="button" class="btn btn-success" (click)="getAsociado()">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <p><b>Nombre:</b> </p>
+                            <p>{{asociado}}</p>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addTraspaso()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,135 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <h4 align="center"><small class="text-muted">Gestionar Usuario</small></h4>
+        <div class="row">
+            <div class="col-md-3">
+                <a href="#" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addUsuario">
+                    <i class="fa fa-plus"></i>Crear usuario
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Lista de proyectos-->
+<section id="usuarios">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h5>Usuarios</h5>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td >#</td>
+                                <td align="center">Usuario</td>
+                                <td align="center">Rol</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let usuario of usuarios; let i = index">
+                                <td>{{i+1}}</td>
+                                <td align="center">{{usuario.usuario}}</td>
+                                <td align="center">{{usuario.rol}}</td>
+                                <td> 
+                                    <a routerLink="/usuario" class="secondary-content"><i (click)="getUsuario(usuario)"
+                                            class="fa fa-pencil" data-toggle="modal" data-target="#addUsuario"></i></a>
+                                    &nbsp;
+                                    <a routerLink="/usuario" class="secondary-content"><i (click)="delUsuario(usuario)"
+                                            class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar proyectos-->
+<div class="modal fade" id="addUsuario" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" *ngIf="!modoEdicion">
+                <h5 class="modal-title">Crear usuario</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-header" *ngIf="modoEdicion">
+                <h5 class="modal-title">Modificar usuario</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="usuario">Usuario</label>
+                                <input type="text" class="form-control" formControlName="usuario"
+                                    [(ngModel)]="usuario.usuario">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('usuario')?.invalid && (addForm.get('usuario')?.dirty || addForm.get('usuario')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="rol">Rol</label>
+                                <select class="custom-select custom-select-sm" formControlName="rol"
+                                    [(ngModel)]="usuario.id_rol">
+                                    <option [value]="rol.id" *ngFor="let rol of roles">{{ rol.rol }}</option>
+                                </select>
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('rol')?.invalid && (addForm.get('rol')?.dirty || addForm.get('rol')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="pwd">Contraseña</label>
+                                <input type="password" class="form-control" formControlName="pwd"
+                                    [(ngModel)]="usuario.password">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('pwd')?.invalid && (addForm.get('pwd')?.dirty || addForm.get('pwd')?.touched)">
+                                    Mínimo 8 carácteres, incluya al menos un número, una minúscula y una mayúscula
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="identificacion">Número de documento</label>
+                                <input type="identificacion" class="form-control" formControlName="identificacion"
+                                    [(ngModel)]="usuario.identificacion">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('identificacion')?.invalid && (addForm.get('identificacion')?.dirty || addForm.get('identificacion')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer" *ngIf="!modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addUsuario()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+            <div class="modal-footer" *ngIf="modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="updateUsuario()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

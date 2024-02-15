@@ -1,0 +1,258 @@
+<!-- Botones-->
+<section id="actions" class="py-4 mb-4 bg-light">
+    <div class="container">
+        <h4 align = "center"><small class="text-muted">Gestionar {{tipoPersona}}</small></h4>
+        <form [formGroup]="filterForm">
+            <div class="row">
+                <div class="col-md-3" *ngIf="solo_lectura==0">
+                    <a href="#" class="btn btn-primary btn-block" data-toggle="modal" data-target="#addPersonas">
+                        <i class="fa fa-plus"></i>Adicionar {{tipoPersona}}
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-secondary" (click)="listPersona()">
+                        <i class="fa fa-eye"></i>Ver todos
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <!--<label for="palabra">Palabra clave</label>-->
+                        <input type="text" class="form-control" formControlName="palabraBuscar"
+                            [(ngModel)]="key">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-success" (click)="searchPersona()"
+                        [disabled]="!filterForm.valid">
+                        <i class="fa fa-search"></i>Buscar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!--Lista de personas-->
+<section id="personas">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Listado de {{pluralTipo}}</h4>
+                    </div>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td>Documento</td>
+                                <td>Nombre</td>
+                                <td>Fecha nacimiento</td>
+                                <td>Lugar nacimiento</td>
+                                <td>Dirección</td>
+                                <td>Teléfono</td>
+                                <td>Ciudad residencia</td>
+                                <td *ngIf="solo_lectura==0">Activo</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let persona of personas; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{persona.abreviatura}} {{persona.identificacion}}</td>
+                                <td>{{persona.primerNombre}} {{persona.segundoNombre}} {{persona.primerApellido}} {{persona.segundoApellido}}</td>
+                                <td>{{persona.fechaNacimiento}}</td>
+                                <td>{{persona.municipioNacimiento}}</td>
+                                <td>{{persona.direccion}}</td>
+                                <td>{{persona.celular}}</td>
+                                <td>{{persona.municipioResidencia}}</td>
+                                <td *ngIf="persona.activo==1 && solo_lectura==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            checked (click)="changeState(persona)">
+                                    </div>
+                                </td>
+                                <td *ngIf="persona.activo==0 && solo_lectura==0">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="activo"
+                                            (click)="changeState(persona)">
+                                    </div>
+                                </td>
+                                <td *ngIf="solo_lectura==0">
+                                    <a routerLink="/persona/{{idTipoPersona}}" class="secondary-content"><i (click)="getPersona(persona)"
+                                        class="fa fa-pencil" data-toggle="modal" data-target="#addPersonas"></i></a>
+                                    &nbsp;
+                                    <a routerLink="/persona/{{idTipoPersona}}" class="secondary-content"><i (click)="delPersona(persona)"
+                                        class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Ventana modal adicionar-->
+<div class="modal fade" id="addPersonas" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" *ngIf="!modoEdicion">
+                <h5 class="modal-title">Adicionar {{tipoPersona}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-header" *ngIf="modoEdicion">
+                <h5 class="modal-title">Modificar {{tipoPersona}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="addForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="idTipoDocumento">Tipo de documento</label>
+                                <select class="custom-select custom-select-sm" formControlName="idTipoDocumento"
+                                    [(ngModel)]="persona.idTipoDocumento">
+                                    <option [value]="tipoDocumento.id" *ngFor="let tipoDocumento of tiposDocumento">{{
+                                        tipoDocumento.detalle }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="numeroIdentificacion">Número de documento</label>
+                                <input type="number" class="form-control" formControlName="numeroIdentificacion"
+                                    [(ngModel)]="persona.identificacion">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('numeroIdentificacion')?.invalid && (addForm.get('numeroIdentificacion')?.dirty || addForm.get('numeroIdentificacion')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="primerNombre">Primer Nombre</label>
+                                <input type="text" class="form-control" formControlName="primerNombre"
+                                    [(ngModel)]="persona.primerNombre">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('primerNombre')?.invalid && (addForm.get('primerNombre')?.dirty || addForm.get('primerNombre')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="segundoNombre">Segundo Nombre</label>
+                                <input type="text" class="form-control" formControlName="segundoNombre"
+                                    [(ngModel)]="persona.segundoNombre">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="primerApellido">Primer Apellido</label>
+                                <input type="text" class="form-control" formControlName="primerApellido"
+                                    [(ngModel)]="persona.primerApellido">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('primerApellido')?.invalid && (addForm.get('primerApellido')?.dirty || addForm.get('primerApellido')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="segundoApellido">Segundo Apellido</label>
+                                <input type="text" class="form-control" formControlName="segundoApellido"
+                                    [(ngModel)]="persona.segundoApellido">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" formControlName="fechaNacimiento"
+                                    [(ngModel)]="persona.fechaNacimiento">
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="idDepartamentoNacimietno">Departamento</label>
+                                <select class="custom-select custom-select-sm"
+                                    formControlName="idDepartamentoNacimiento" [(ngModel)]="idDepartamentoNacimiento"
+                                    (change)="listMunicipioNacimiento()">
+                                    <option [value]="departamento.idDepartamento"
+                                        *ngFor="let departamento of departamentos">{{ departamento.departamento }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="idMunicipioNacimiento">Municipio</label>
+                                <select class="custom-select custom-select-sm" formControlName="idMunicipioNacimiento"
+                                    [(ngModel)]="persona.idMunicipioNacimiento">
+                                    <option [value]="municipio.idMunicipio" *ngFor="let municipio of municipiosNacimiento">{{
+                                        municipio.municipio }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="direccion">Dirección residencia</label>
+                                <input type="text" class="form-control" formControlName="direccion"
+                                    [(ngModel)]="persona.direccion">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="idDepartamentoResidencia">Departamento</label>
+                                <select class="custom-select custom-select-sm"
+                                    formControlName="idDepartamentoResidencia" [(ngModel)]="idDepartamentoResidencia"
+                                    (change)="listMunicipioResidencia()">
+                                    <option [value]="departamento.idDepartamento"
+                                        *ngFor="let departamento of departamentos">{{ departamento.departamento }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="idMunicipioResidencia">Municipio</label>
+                                <select class="custom-select custom-select-sm" formControlName="idMunicipioResidencia"
+                                    [(ngModel)]="persona.idMunicipioResidencia">
+                                    <option [value]="municipio.idMunicipio" *ngFor="let municipio of municipiosResidencia">{{
+                                        municipio.municipio }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="celular">Celular</label>
+                                <input type="number" class="form-control" formControlName="celular"
+                                    [(ngModel)]="persona.celular">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer" *ngIf="!modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="addPersona()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+            <div class="modal-footer" *ngIf="modoEdicion">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="updatePersona()" [disabled]="!addForm.valid"
+                    data-dismiss="modal">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
