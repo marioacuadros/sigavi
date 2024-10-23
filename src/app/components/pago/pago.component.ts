@@ -9,6 +9,7 @@ import { PersonaService } from 'src/app/services/persona.service'
 import { TrasladoService  } from 'src/app/services/traslado.service'
 import { MenuService } from 'src/app/services/menu.service'
 import { LoginService } from 'src/app/services/login.service'
+import { PagoLegalizacionService } from 'src/app/services/pago-legalizacion.service'
 import { Venta } from 'src/app/models/venta';
 import { Traspaso } from 'src/app/models/traspaso'
 
@@ -21,6 +22,7 @@ export class PagoComponent {
   filterForm: FormGroup;
   addForm: FormGroup;
   addTraspase: FormGroup;
+  addFormLegalizacion: FormGroup;
   constructor(
     private frmBuilder: FormBuilder,
     private proyectoService: ProyectoService,
@@ -30,7 +32,8 @@ export class PagoComponent {
     private personaService: PersonaService,
     private trasladoService: TrasladoService,
     private menuService: MenuService,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private pagoLegalizacionService:PagoLegalizacionService
   )
   {
     this.filterForm = this.frmBuilder.group({
@@ -39,11 +42,19 @@ export class PagoComponent {
     });
     this.addForm = this.frmBuilder.group({
       pago: ['', Validators.required],
+      descuento:[],
+      motivo:[],
+      fecha:[],
+      observacion:[],
     });
     this.addTraspase = this.frmBuilder.group({
       idNuevo: ['', Validators.required],
     });
-
+    this.addFormLegalizacion = this.frmBuilder.group({
+      pago: ['', Validators.required],
+      fecha:[],
+      observacion:[],
+    });
   }
   pago: Venta = {
     id:0,
@@ -62,6 +73,11 @@ export class PagoComponent {
     id_tipo:0,
     tipo:'',
     id_usuario:'',
+    descuento:0,
+    motivo:'',
+    legalizacion:0,
+    saldo_legalizacion:0,
+    observacion:''
   }
 
   traspaso:Traspaso = {
@@ -82,12 +98,21 @@ export class PagoComponent {
     id_usuario:'',
   }
 
+  legalizacion:any = {
+    id_lote:0,
+    pago:0,
+    saldo:0,
+    id_asociado:'',
+    id_usuario:'',
+  }
+
   proyectos:any = null
   lotes:any = null
   idLote: number = 0
   pagos:any = null
   lote:any = null
   pagoEmpty = this.pago
+  legalizacionEmpty = this.legalizacion
   idAsociado: string = ''
   asociado:string = ''
   key:string=''
@@ -96,6 +121,8 @@ export class PagoComponent {
   respuesta:any = null
   user:any = null
   idUsuario:string = ''
+  editarPago:boolean = false
+  legalizaciones:any = null
 
   ngOnInit(): void {
     this.listProyecto()
@@ -164,6 +191,8 @@ export class PagoComponent {
     this.pago.asociado = lote.asociado
     this.pago.id_tipo = lote.id_tipo
     this.pago.tipo = lote.tipo
+    this.pago.legalizacion = lote.legalizacion
+    this.pago.saldo_legalizacion = lote.saldo_legalizacion
     this.lote = lote
     this.pagoService.listPago(lote.id_lote).subscribe(
       result => {
@@ -180,6 +209,7 @@ export class PagoComponent {
           this.listLote(this.lote.id_proyecto,0)
           this.listPago(this.lote);
           this.pago = this.pagoEmpty
+          this.getLote()
         }
       );
     }else{
@@ -205,11 +235,12 @@ export class PagoComponent {
   delPago(pago:Venta){
     pago.id_usuario = this.key
     if(confirm('Realmente desea elimnar el registro?')){
-      this.pagoService.delPago(pago.id).subscribe(
+      this.pagoService.delPago(pago).subscribe(
         data => {
           this.listLote(this.lote.id_proyecto,0)
           this.listPago(this.lote);
           this.pago = this.pagoEmpty
+          this.getLote()
         }
       );
     }   
@@ -259,4 +290,129 @@ export class PagoComponent {
       }
     );
   }
+  getPago(id: number){
+    this.pagoService.getPago(id).subscribe(
+      (result:any) => {
+        if(result!=null)
+        {
+          this.pago = result[0];
+          this.editarPago = true
+        }
+      }
+    );
+  }
+  updatePago(){
+    this.pago.id_usuario = this.key
+    if (this.pago.pago <= this.pago.saldo){
+      this.pagoService.updatePago(this.pago).subscribe(
+        data => {
+          this.listLote(this.lote.id_proyecto,0)
+          this.listPago(this.lote);
+          this.resetPago()
+        }
+      );
+    }else{
+      alert("El valor sobrepasa el saldo")
+    }
+  }
+  resetPago(){
+    this.pago = this.pagoEmpty
+    this.legalizacion = this.legalizacionEmpty
+    this.editarPago = false
+    this.listLote(this.lote.id_proyecto,0)
+  }
+  prnPazSalvo(){
+    this.pagoService.printPazSalvo(this.pago).subscribe(
+      (result:any) => {
+          const newBlob = new Blob([result], {type: 'application/pdf'});
+          const downloadLink = document.createElement('a');
+          downloadLink.target = '_self';
+          const fileName = 'content.pdf';
+          const data = window.URL.createObjectURL(newBlob);
+          downloadLink.href = data;
+          downloadLink.download = fileName;
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+      }
+    );
+
+  }
+  listLegalizacion(lote: any){
+    this.legalizacion.id_lote = lote.id_lote
+    this.legalizacion.id_asociado = lote.id_asociado
+    this.legalizacion.id_usuario = this.key
+    this.legalizacion.saldo = lote.saldo_legalizacion
+    this.pago.proyecto = lote.proyecto
+    this.pago.numero = lote.numero
+    this.pago.valorLote = lote.valor_lote
+    this.pago.saldo = lote.saldo
+    this.pago.id_lote = lote.id_lote
+    this.pago.id_asociado = lote.id_asociado
+    this.pago.asociado = lote.asociado
+    this.pago.id_tipo = lote.id_tipo
+    this.pago.tipo = lote.tipo
+    this.pago.legalizacion = lote.legalizacion
+    this.pago.saldo_legalizacion = lote.saldo_legalizacion
+    this.lote = lote
+    this.pagoLegalizacionService.listPago(lote.id_lote).subscribe(
+      result => {
+          this.legalizaciones = result;
+      }
+    );
+
+  }
+
+  printPagoLegalizacion(pago: any){
+    this.pagoLegalizacionService.printPago(pago).subscribe(
+      (result:any) => {
+          const newBlob = new Blob([result], {type: 'application/pdf'});
+          const downloadLink = document.createElement('a');
+          downloadLink.target = '_self';
+          const fileName = 'content.pdf';
+          const data = window.URL.createObjectURL(newBlob);
+          downloadLink.href = data;
+          downloadLink.download = fileName;
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+      }
+    );
+  }
+
+  delPagoLegalizacion(pago: any){
+    pago.id_usuario = this.key
+    if(confirm('Realmente desea elimnar el registro?')){
+      this.pagoLegalizacionService.delPago(pago).subscribe(
+        data => {
+          this.listLote(this.lote.id_proyecto,0)
+          this.listLegalizacion(this.lote);
+          this.resetPago()
+        }
+      );
+    }   
+  }
+  
+  addLegalizacion(){
+    if (this.legalizacion.pago <= this.legalizacion.saldo){
+      this.pagoLegalizacionService.addPago(this.legalizacion).subscribe(
+        data => {
+          this.listLote(this.lote.id_proyecto,0)
+          this.listPago(this.lote);
+          this.resetPago()
+        }
+      );
+    }else{
+      alert("El valor sobrepasa el saldo")
+    }
+  }
+  getLote(){
+    this.loteService.getLote(this.lote.id_lote).subscribe(
+      (result:any) => {
+        if(result!=null)
+        {
+          this.pago = result[0];
+        }
+      }
+    );
+  }
+
 }

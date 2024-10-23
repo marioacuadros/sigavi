@@ -15,4 +15,9 @@ export interface Venta{
     id_tipo: number
     tipo:string
     id_usuario:string
+    descuento:number
+    motivo:string
+    legalizacion:number
+    saldo_legalizacion:number
+    observacion:string
 }

@@ -42,7 +42,8 @@ export class PersonaComponent {
       celular:[],
     });
     this.filterForm = this.frmBuilder.group({
-      palabraBuscar:[]
+      palabraBuscar:[],
+      strFile:[]
     })
   }
 
@@ -66,6 +67,11 @@ export class PersonaComponent {
     idTipo:0,
   }
 
+  archivo:any={
+    base64:'',
+    id_tipo: 0
+  }
+
   personaEmpty = this.persona
   key:string=''  
   personas:any=null
@@ -78,8 +84,9 @@ export class PersonaComponent {
   tiposDocumento: any=null
   respuesta:any = null
   rol:string = ''
+  nrol:number=0
   solo_lectura : number = 0
-
+  strFile:any=null
   
 
   ngOnInit(): void {
@@ -100,12 +107,14 @@ export class PersonaComponent {
     this.listPersona()
     this.listTipoDocumento()
     this.listDepartamento()
+    this.getKeyUser()
   }
 
   getKeyUser(){
     let rol = localStorage.getItem('rol');
     if (rol!=null){
       this.rol = rol
+      this.nrol = parseInt(rol.replace(/\D/g, ""),10)|0
     }
   }
 
@@ -212,7 +221,7 @@ export class PersonaComponent {
   
   searchPersona(){
     this.personas = null
-    this.personaService.search(this.key).subscribe(
+    this.personaService.search(this.key, this.idTipoPersona).subscribe(
     (result:any) => {
       if(result != null)  
         this.personas = result;
@@ -227,5 +236,30 @@ export class PersonaComponent {
       }
     );
   }
-
+  
+  cargarPersona(e:any){
+      let fileReader = new FileReader()
+      let selectedFile = e.target.files[0]
+      let fileType = ''
+      fileType = selectedFile.name.split('.')[1]
+      if (fileType !== 'csv'){
+        alert('Tipo de archivo inválido')
+      }else{
+        fileReader.readAsDataURL(selectedFile)
+        fileReader.onload=()=>{
+          let result = fileReader.result;
+          this.strFile = result
+          this.archivo.base64 = this.strFile
+          this.archivo.id_tipo = this.idTipoPersona
+          //console.log(this.strFile)
+          this.personaService.cargarPersona(this.archivo).subscribe(
+            result => {
+                this.respuesta = result;
+                console.log(this.respuesta)
+                this.listPersona();
+            }
+          );
+        }
+      }
+    }
 }

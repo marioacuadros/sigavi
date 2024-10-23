@@ -30,11 +30,14 @@ export class VentaComponent {
     this.filterForm = this.frmBuilder.group({
       proyecto: [],
       lote: [],
+      strFile: [],
     });
     this.addForm = this.frmBuilder.group({
       idAsociado: [0, Validators.required],
       idAsesor: [0, Validators.required],
       pago: [0, Validators.required],
+      descuento:[],
+      motivo:[],
     });
     this.fileForm = this.frmBuilder.group({
       descripcion: ['', Validators.required],
@@ -58,7 +61,12 @@ export class VentaComponent {
     saldo:0,
     id_tipo:0,
     tipo:'',
-    id_usuario:''
+    id_usuario:'',
+    descuento:0,
+    motivo:'',
+    legalizacion:0,
+    saldo_legalizacion:0,
+    observacion:''
   }
 
   loteVenta:Lote = {
@@ -73,10 +81,14 @@ export class VentaComponent {
     id_tipo:0,
     tipo:'',
     comision:0,
-    id_usuario:''
+    id_usuario:'',
+    legalizacion:0
   }
 
-
+  archivo:any={
+    base64:'',
+    id_tipo: 0
+  }
   proyectos:any = null
   lotes:any = null
   idLote: number = 0
@@ -85,21 +97,25 @@ export class VentaComponent {
   key:string=''
   respuesta:any = null
   rol:string = ''
-  solo_lectura : number = 0  
+  nrol:number = 0
+  solo_lectura : number = 0
+  strFile:any=null
 
   ngOnInit(): void {
     this.listProyecto()
     this.getKeyUser()
     this.getLectura()
+    
   }
 
   getKeyUser(){
     let key = localStorage.getItem('key');
-    let rol = localStorage.getItem('rol');
+    let rol:string|null = localStorage.getItem('rol');
     if (key!==null)
       this.key = key
     if (rol!=null){
       this.rol = rol
+      this.nrol = parseInt(rol.replace(/\D/g, ""),10)|0
     }
   }
 
@@ -165,5 +181,29 @@ export class VentaComponent {
         }
       }
     );
+  }
+  cargarVenta(e:any){
+    let fileReader = new FileReader()
+    let selectedFile = e.target.files[0]
+    let fileType = ''
+    fileType = selectedFile.name.split('.')[1]
+    if (fileType !== 'csv'){
+      alert('Tipo de archivo inválido')
+    }else{
+      fileReader.readAsDataURL(selectedFile)
+      fileReader.onload=()=>{
+        let result = fileReader.result;
+        this.strFile = result
+        this.archivo.base64 = this.strFile
+        //console.log(this.strFile)
+        this.pagoService.cargarVenta(this.archivo).subscribe(
+          result => {
+              this.respuesta = result;
+              console.log(this.respuesta)
+              this.listLoteLibre(this.venta.id_proyecto,0);
+          }
+        );
+      }
+    }
   }
 }

@@ -28,6 +28,14 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-md-3" *ngIf="nrol==1 && solo_lectura==0">
+                    <div class="form-group">
+                        <input class="form-control" 
+                            type="file"
+                            formControlName="strFile"
+                            (change)="cargarVenta($event)">
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -56,7 +64,7 @@
                             <tr *ngFor="let lote of lotes; let i = index">
                                 <td align="center">{{i+1}}</td>
                                 <td align="center">{{lote.proyecto}}</td>
-                                <td align="center">{{lote.numero | number}}</td>
+                                <td align="center">{{lote.numero}}</td>
                                 <td align="center">{{lote.tamano | number}}</td>
                                 <td align="center">{{lote.valor | number}}</td>
                                 <td *ngIf="solo_lectura==0">
@@ -159,9 +167,10 @@
                         </div>
                     </div>
                     <div class = "row">
+                        <h6>Información de pago</h6>
                         <div class="col-4">
-                            <h6>Información de pago</h6>
                             <div class="form-group">
+                                <label for="pago">Valor pagado</label>
                                 <input type="number" class="form-control" formControlName="pago"
                                     [(ngModel)]="venta.pago"
                                     placeholder="Valor pagado"
@@ -172,8 +181,25 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="descuento">Descuento</label>
+                                <input type="number" class="form-control" formControlName="descuento"
+                                    [(ngModel)]="venta.descuento"
+                                    placeholder="Valor descuento"
+                                    >
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="motivo">Motivo</label>
+                                <input type="text" class="form-control" formControlName="motivo"
+                                    [(ngModel)]="venta.motivo"
+                                    placeholder="Motivo del descuento"
+                                    >
+                            </div>
+                        </div>
                     </div>
-
                 </div>
             </form>
             <div class="modal-footer">

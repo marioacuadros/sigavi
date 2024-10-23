@@ -11,4 +11,5 @@ export interface Lote{
     tipo:string
     comision:number
     id_usuario:string
+    legalizacion:number
 }

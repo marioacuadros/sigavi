@@ -9,7 +9,7 @@
                         <i class="fa fa-plus"></i>Adicionar {{tipoPersona}}
                     </a>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <button type="button" class="btn btn-secondary" (click)="listPersona()">
                         <i class="fa fa-eye"></i>Ver todos
                     </button>
@@ -21,11 +21,19 @@
                             [(ngModel)]="key">
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <button type="button" class="btn btn-success" (click)="searchPersona()"
                         [disabled]="!filterForm.valid">
                         <i class="fa fa-search"></i>Buscar
                     </button>
+                </div>
+                <div class="col-md-2" *ngIf="nrol==1">
+                    <div class="form-group">
+                        <input class="form-control" 
+                            type="file"
+                            formControlName="strFile"
+                            (change)="cargarPersona($event)">
+                    </div>
                 </div>
             </div>
         </form>

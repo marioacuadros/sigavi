@@ -68,6 +68,7 @@
                                 <td align="center">Numero</td>
                                 <td align="center">Tamaño</td>
                                 <td align="center">Valor comercial</td>
+                                <td align="center">Valor legalización</td>
                                 <td align="center">Estado</td>
                                 <td *ngIf="solo_lectura==0">Activo</td>
                                 <td></td>
@@ -76,9 +77,10 @@
                         <tbody>
                             <tr *ngFor="let lote of lotes; let i = index">
                                 <td align="center">{{i+1}}</td>
-                                <td align="center">{{lote.numero | number}}</td>
+                                <td align="center">{{lote.numero}}</td>
                                 <td align="center">{{lote.tamano | number}}</td>
                                 <td align="center">{{lote.valor | number}}</td>
+                                <td align="center">{{lote.legalizacion | number}}</td>
                                 <td align="center">{{lote.estado }}</td>
                                 <td *ngIf="lote.activo==1 && solo_lectura==0">
                                     <div class="form-check form-switch">
@@ -187,6 +189,17 @@
                                     [(ngModel)]="lote.comision">
                                 <div class="alert alert-danger" role="alert"
                                     *ngIf="addForm.get('comision')?.invalid && (addForm.get('comision')?.dirty || addForm.get('comision')?.touched)">
+                                    Este campo es requerido
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="comision">Legalización</label>
+                                <input type="number" class="form-control" formControlName="legalizacion"
+                                    [(ngModel)]="lote.legalizacion">
+                                <div class="alert alert-danger" role="alert"
+                                    *ngIf="addForm.get('legalizacion')?.invalid && (addForm.get('legalizacion')?.dirty || addForm.get('legalizacion')?.touched)">
                                     Este campo es requerido
                                 </div>
                             </div>

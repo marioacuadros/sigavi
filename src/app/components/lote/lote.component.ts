@@ -34,6 +34,7 @@ export class LoteComponent {
       valor:[0, Validators.required],
       estado:['', Validators.required],
       comision:['', Validators.required],
+      legalizacion:['', Validators.required],
     });
     this.fileForm = this.frmBuilder.group({
       descripcion:['', Validators.required],
@@ -53,6 +54,7 @@ export class LoteComponent {
     tipo:'',
     comision:0,
     id_usuario:'',
+    legalizacion:0,
   }
 
   archivo: Archivo = {
