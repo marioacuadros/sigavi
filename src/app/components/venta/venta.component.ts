@@ -66,7 +66,8 @@ export class VentaComponent {
     motivo:'',
     legalizacion:0,
     saldo_legalizacion:0,
-    observacion:''
+    observacion:'',
+    forma_pago:''
   }
 
   loteVenta:Lote = {

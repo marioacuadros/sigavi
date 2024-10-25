@@ -198,12 +198,22 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-2">
                             <div class="form-group">
                                 <label for="fecha">Fecha</label>
                                 <input type="date" class="form-control" formControlName="fecha" [(ngModel)]="pago.fecha"
                                     placeholder="Fecha de pago">
                             </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="formaPago">Forma de Pago</label>
+                                <select class="custom-select custom-select-sm" formControlName="formaPago"
+                                [(ngModel)]="pago.forma_pago">
+                                <option [value]="formaPago.detalle" *ngFor="let formaPago of formasPago">{{ formaPago.detalle }}
+                                </option>
+                            </select>
+                                </div>
                         </div>
                         <div class="col-6">
                             <div class="form-group">
@@ -212,27 +222,38 @@
                                     placeholder="Observación"></textarea>
                             </div>
                         </div>
-                        <div class="col-md-2" *ngIf="pago.saldo==0 && pago.saldo_legalizacion==0">
-                            <br><button type="button" class="btn btn-info" data-dismiss="modal" (click)="prnPazSalvo()">Imprimir paz
-                                y salvo</button>
-                        </div>
                     </div>
 
                 </div>
             </form>
             <div class="modal-footer" *ngIf="!editarPago">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                <div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
                     (click)="resetPago()">Cerrar</button>
-                <button type="button" class="btn btn-primary" (click)="addPago()" [disabled]="!addForm.valid"
+                </div>
+                <div>
+                    <button type="button" class="btn btn-primary" (click)="addPago()" [disabled]="!addForm.valid"
                     data-dismiss="modal">Guardar</button>
+                </div>
+                <div *ngIf="pago.saldo==0 && pago.saldo_legalizacion==0">
+                    <button type="button" class="btn btn-info" data-dismiss="modal" (click)="prnPazSalvo()">Imprimir paz
+                        y salvo</button>
+                </div>
             </div>
             <div class="modal-footer" *ngIf="editarPago">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                <div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
                     (click)="resetPago()">Cerrar</button>
-                <button type="button" class="btn btn-primary" (click)="updatePago()" [disabled]="!addForm.valid"
+                </div>
+                <div>
+                    <button type="button" class="btn btn-primary" (click)="updatePago()" [disabled]="!addForm.valid"
                     data-dismiss="modal">Guardar</button>
+                </div>
+                <div *ngIf="pago.saldo==0 && pago.saldo_legalizacion==0">
+                    <button type="button" class="btn btn-info" data-dismiss="modal" (click)="prnPazSalvo()">Imprimir paz
+                        y salvo</button>
+                </div>
             </div>
-
         </div>
     </div>
 </div>

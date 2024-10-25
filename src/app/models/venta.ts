@@ -20,4 +20,5 @@ export interface Venta{
     legalizacion:number
     saldo_legalizacion:number
     observacion:string
+    forma_pago:string
 }

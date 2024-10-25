@@ -9,6 +9,7 @@ import { PersonaService } from 'src/app/services/persona.service'
 import { TrasladoService  } from 'src/app/services/traslado.service'
 import { MenuService } from 'src/app/services/menu.service'
 import { LoginService } from 'src/app/services/login.service'
+import { ComunService } from 'src/app/services/comun.service'
 import { PagoLegalizacionService } from 'src/app/services/pago-legalizacion.service'
 import { Venta } from 'src/app/models/venta';
 import { Traspaso } from 'src/app/models/traspaso'
@@ -33,7 +34,8 @@ export class PagoComponent {
     private trasladoService: TrasladoService,
     private menuService: MenuService,
     private loginService: LoginService,
-    private pagoLegalizacionService:PagoLegalizacionService
+    private pagoLegalizacionService:PagoLegalizacionService,
+    private comunService: ComunService
   )
   {
     this.filterForm = this.frmBuilder.group({
@@ -46,6 +48,7 @@ export class PagoComponent {
       motivo:[],
       fecha:[],
       observacion:[],
+      formaPago:['', Validators.required],
     });
     this.addTraspase = this.frmBuilder.group({
       idNuevo: ['', Validators.required],
@@ -77,7 +80,8 @@ export class PagoComponent {
     motivo:'',
     legalizacion:0,
     saldo_legalizacion:0,
-    observacion:''
+    observacion:'',
+    forma_pago:''
   }
 
   traspaso:Traspaso = {
@@ -123,9 +127,11 @@ export class PagoComponent {
   idUsuario:string = ''
   editarPago:boolean = false
   legalizaciones:any = null
+  formasPago:any=null
 
   ngOnInit(): void {
     this.listProyecto()
+    this.listFormaPago()
     this.getKeyUser()
     this.getLogueado()
     this.getLectura()
@@ -413,6 +419,13 @@ export class PagoComponent {
         }
       }
     );
+  }
+  listFormaPago(){
+    this.comunService.listDetalle(5).subscribe(
+      result => {
+        this.formasPago = result
+      }
+    )
   }
 
 }
