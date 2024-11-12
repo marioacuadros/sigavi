@@ -14,7 +14,7 @@ export class PagoService {
   createVenta(venta: Venta) {
     return this.http.post(`${this.URL}add_venta.php`, JSON.stringify(venta));
   }
-  listPago(id:number){
+  listPago(id:string){
     return this.http.get(`${this.URL}list.php?id=${id}`);
   }
   createPago(pago: Venta) {

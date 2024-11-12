@@ -43,7 +43,7 @@ export class LoteService {
     return this.http.get(`${this.URL}list_pago.php?id=${id}&l=${l}&u=${idUsuario}`);
   }
 
-  getLote(id:number){
+  getLote(id:string){
     return this.http.get(`${this.URL}get_lote.php?id=${id}`);
   }
 

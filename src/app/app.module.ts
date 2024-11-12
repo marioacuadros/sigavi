@@ -25,6 +25,7 @@ import { CierreCajaComponent } from './components/cierre-caja/cierre-caja.compon
 import { UsuarioComponent } from './components/usuario/usuario.component';
 import { ReporteComponent } from './components/reporte/reporte.component';
 import { CambiarPwdComponent } from './components/cambiar-pwd/cambiar-pwd.component';
+import { HacerPagoComponent } from './components/hacer-pago/hacer-pago.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { CambiarPwdComponent } from './components/cambiar-pwd/cambiar-pwd.compon
     UsuarioComponent,
     ReporteComponent,
     CambiarPwdComponent,
+    HacerPagoComponent,
   ],
   imports: [
     BrowserModule,

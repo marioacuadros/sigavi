@@ -18,6 +18,7 @@ import { CierreCajaComponent } from './components/cierre-caja/cierre-caja.compon
 import { UsuarioComponent } from './components/usuario/usuario.component'
 import { ReporteComponent } from './components/reporte/reporte.component'
 import { CambiarPwdComponent } from './components/cambiar-pwd/cambiar-pwd.component'
+import { HacerPagoComponent } from './components/hacer-pago/hacer-pago.component'
 
 const routes: Routes = [
   {path: '', component: NotFoundComponent},
@@ -27,7 +28,7 @@ const routes: Routes = [
   {path: 'lote', component: LoteComponent},
   {path: 'persona/:id', component: PersonaComponent},
   {path: 'venta', component: VentaComponent},
-  {path: 'pago', component: PagoComponent},
+  {path: 'pago/:id', component: PagoComponent},
   {path: 'devolucion', component: DevolucionComponent},
   {path: 'traslado', component: TrasladoComponent},
   {path: 'login', component: LoginComponent},
@@ -37,6 +38,7 @@ const routes: Routes = [
   {path: 'usuario', component: UsuarioComponent},
   {path: 'reporte/:id', component: ReporteComponent},
   {path: 'cambiarPw', component: CambiarPwdComponent},
+  {path: 'hacerPago/:id_lote', component: HacerPagoComponent},
   {path:'**', component: NotFoundComponent},
 ];
 
