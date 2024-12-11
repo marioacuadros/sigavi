@@ -28,6 +28,8 @@ export class ReporteComponent {
   fechaInicio:string=''
   fechaFin:string=''
   resultados:any=null
+  proyectos: any = null
+  formasPago: any = null
 
   ngOnInit(): void {
     this.getFecha()
@@ -45,6 +47,8 @@ export class ReporteComponent {
       this.tituloReporte = 'Reporte Pago de Comisiones'
     if (this.idTipoReporte==6)
       this.tituloReporte = 'Reporte Cierre Diario'
+    if (this.idTipoReporte==7)
+      this.tituloReporte = 'Cuadre Diario'
 
     this.list();
     }  
@@ -98,10 +102,22 @@ export class ReporteComponent {
         }
       );
     }
+    if (this.idTipoReporte==7){
+      this.reporteService.cuadreDiario(this.fechaInicio, this.fechaFin).subscribe(
+        result => {
+            this.resultados = result;
+            this.proyectos = this.resultados.proyectos
+            this.formasPago = this.resultados.forma_pago
+        }
+      );
+    }
 
   }
   
   exportAsXLSX():void {
+    if (this.idTipoReporte == 7)
+      this.reporteService.exportAsExcelVariasHojas(this.resultados, 'content');
+    else
     this.reporteService.exportAsExcelFile(this.resultados, 'content');
  }
 

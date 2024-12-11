@@ -37,6 +37,10 @@ export class ReporteService {
     return this.http.get(`${this.URL}cierre_diario.php?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`);
   }
 
+  cuadreDiario(fechaInicio:string, fechaFin:string) {
+    return this.http.get(`${this.URL}cuadre.php?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`);
+  }
+
 
   public exportAsExcelFile(json: any[], excelFileName: string): void {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);  
@@ -49,4 +53,31 @@ export class ReporteService {
    const data: Blob = new Blob([buffer], {type: EXCEL_TYPE});
    FileSaver.saveAs(data, fileName + '.xlsx');
   }
+  
+  public exportAsExcelVariasHojas(json: any, excelFileName: string): void {
+    const sheets: { [key: string]: XLSX.WorkSheet } = {};
+    const sheetNames: string[] = [];
+
+    // Itera sobre cada clave en el JSON
+    for (const key of Object.keys(json)) {
+        // Verifica si el valor es un arreglo
+        if (Array.isArray(json[key])) {
+            // Convierte el arreglo a una hoja de cálculo
+            sheets[key] = XLSX.utils.json_to_sheet(json[key]);
+            sheetNames.push(key); // Agrega el nombre de la hoja
+        }
+    }
+
+    // Crea el libro de trabajo con todas las hojas generadas
+    const workbook: XLSX.WorkBook = {
+        Sheets: sheets,
+        SheetNames: sheetNames
+    };
+
+    // Convierte el libro a un buffer de Excel
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    // Guarda el archivo de Excel
+    this.saveAsExcelFile(excelBuffer, excelFileName);  }
+  
 }

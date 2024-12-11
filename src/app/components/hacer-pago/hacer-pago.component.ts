@@ -6,6 +6,8 @@ import { LoteService } from 'src/app/services/lote.service';
 import { PagoService } from 'src/app/services/pago.service'
 import { ComunService } from 'src/app/services/comun.service'
 
+import { Archivo } from 'src/app/models/archivo'
+
 @Component({
   selector: 'app-hacer-pago',
   templateUrl: './hacer-pago.component.html',
@@ -15,6 +17,7 @@ import { ComunService } from 'src/app/services/comun.service'
 export class HacerPagoComponent implements OnInit {
 
   addForm: FormGroup;
+
   datosLote: any = {
     id_lote: 0,
     id_proyecto: 0,
@@ -33,8 +36,16 @@ export class HacerPagoComponent implements OnInit {
     legalizacion: 0,
     saldo_legalizacion: 0,
     usuario: '',
-    forma_pago: []
+    forma_pago: [],
   }
+
+
+  infoPermuta:any = {
+    descripcion: '',
+    valor:0,
+    idDetallePago: 0
+  }
+
 
   id: string | null = ''
   id_proyecto: number = 0
@@ -47,7 +58,12 @@ export class HacerPagoComponent implements OnInit {
   formasPago: any = null
   valorDetalle: number = 0
   forma_pago: string = ''
+  descuentoDetalle:number=0
   formas: any = []
+  descripcionPermuta:string=''
+  respuesta:any=null
+  archivos:any = null
+  base64:string= ''
 
 
 
@@ -66,6 +82,9 @@ export class HacerPagoComponent implements OnInit {
       observacion: [],
       formaPago: [],
       valorDetalle: [],
+      descuentoDetalle:[],
+      descripcionPermuta:[],
+      archivo:[]
     });
   }
 
@@ -105,7 +124,6 @@ export class HacerPagoComponent implements OnInit {
   }
 
   printPago(pago: any) {
-    console.log(pago)
     this.pagoService.printPago(pago).subscribe(
       (result: any) => {
         const newBlob = new Blob([result], { type: 'application/pdf' });
@@ -143,10 +161,18 @@ export class HacerPagoComponent implements OnInit {
             let detalleValor: any = {
               detalle: '',
               valor: 0,
+              descuento:0,
+              descripcionPermuta:'',
+              archivo:'',
             }
-            detalleValor.detalle = jsonTemp[i].forma_pago
-            detalleValor.valor = jsonTemp[i].valor
-            this.formas.push(detalleValor)
+            if(jsonTemp){
+              detalleValor.detalle = jsonTemp[i].forma_pago
+              detalleValor.valor = jsonTemp[i].valor
+              detalleValor.descuento = jsonTemp[i].descuento
+              detalleValor.descripcionPermuta = jsonTemp[i].permuta
+              detalleValor.archivo = jsonTemp[i].archivo
+              this.formas.push(detalleValor)
+            }
           }
           this.editarPago = true
           this.pagoActual = this.pago.pago
@@ -183,6 +209,7 @@ export class HacerPagoComponent implements OnInit {
     this.forma_pago = ''
     this.formas = []
     this.editarPago = false
+    this.descripcionPermuta = ''
   }
 
   addPago() {
@@ -226,18 +253,30 @@ export class HacerPagoComponent implements OnInit {
     let detalleValor: any = {
       detalle: '',
       valor: 0,
+      descuento:0,
+      descripcionPermuta:'',
+      archivo:'',
     }
     let total = 0
+    let totalDescuento = 0
     if (this.forma_pago && this.valorDetalle > 0) {
       detalleValor.detalle = this.forma_pago
       detalleValor.valor = this.valorDetalle
+      detalleValor.descuento = this.descuentoDetalle
+      detalleValor.descripcionPermuta = this.descripcionPermuta
+      detalleValor.archivo = this.base64
       this.formas.push(detalleValor)
       for (let i = 0; i < this.formas.length; i++) {
         total += this.formas[i].valor
+        totalDescuento += this.formas[i].descuento
       }
       this.pago.pago = total
+      this.pago.descuento = totalDescuento
       this.valorDetalle = 0
       this.forma_pago = ''
+      this.descuentoDetalle = 0
+      this.descripcionPermuta = ''
+      this.base64 = ''
     } else {
       alert("Por favor seleccione una forma de pago y/o digite un valor correcto ")
     }
@@ -251,6 +290,48 @@ export class HacerPagoComponent implements OnInit {
         total += item.valor;
     }
     this.pago.pago = total;
-}
+  }
+  getPermuta(detalle_pago: any){
+    console.log(detalle_pago)
+    this.infoPermuta.descripcion = detalle_pago.descripcionPermuta
+    this.infoPermuta.valor = detalle_pago.valor
+    this.infoPermuta.idDetallePago = detalle_pago.id
+    this.listArchivos(detalle_pago)
+  }
 
+  loadFile(e:any){
+    let fileReader = new FileReader()
+    let selectedFile = e.target.files[0]
+    let fileType = ''
+    //console.log(this.archivo)
+    fileType = selectedFile.name.split('.')[1]
+    if (fileType !== 'pdf'){
+      alert('Tipo de archivo inválido')
+    }else{
+      fileReader.readAsDataURL(selectedFile)
+      fileReader.onload=()=>{
+        let result = fileReader.result;
+        let strFile:any = result
+        this.base64 = strFile
+        //console.log(this.archivo)
+      }
+    }
+  }
+  delArchivo(id:number, lote:any){
+    if(confirm('Realmente desea elimnar el registro?')){
+      this.comunService.delArchivo(id).subscribe(
+        data => {
+          this.respuesta = data;
+        }
+      );
+    }  
+  }
+  
+  listArchivos(detalle: any){
+    this.comunService.listArchivo(detalle.id_detalle_pago, 22).subscribe(//6 es id parametro detalle para doumento de lote
+      result => {
+          this.archivos = result;
+      }
+    );
+  }
 }

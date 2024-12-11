@@ -137,7 +137,7 @@
                         <div class="col-4">
                             <div class="form-group">
                                 <label for="numero">Número</label>
-                                <input type="number" class="form-control" formControlName="numero"
+                                <input type="text" class="form-control" formControlName="numero"
                                     [(ngModel)]="lote.numero">
                                 <div class="alert alert-danger" role="alert"
                                     *ngIf="addForm.get('numero')?.invalid && (addForm.get('numero')?.dirty || addForm.get('numero')?.touched)">

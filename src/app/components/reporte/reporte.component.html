@@ -294,3 +294,54 @@
         </div>
     </div>
 </section>
+
+<!--Cuadre diario-->
+<section id="reporte" *ngIf="idTipoReporte==7">
+    <div clas="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-heard">
+                        <h4>Cuadre Diario</h4>
+                    </div>
+                    <hr>
+                    <h5>Entrada por proyecto</h5>
+                    <table class="table table-striped" style="width: 50%;">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td align="center">Proyecto</td>
+                                <td align="center">Valor</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let proyecto of proyectos; let i = index">
+                                <td>{{i+1}}</td>
+                                <td align="left">{{proyecto.proyecto}}</td>
+                                <td align="right">{{proyecto.valor | number}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <hr>
+                    <h5>Entrada por forma de pago</h5>
+                    <table class="table table-striped" style="width: 50%;">
+                        <thead class="thead-light">
+                            <tr>
+                                <td>#</td>
+                                <td align="center">Forma de pago</td>
+                                <td align="center">Valor</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let forma of formasPago; let i = index">
+                                <td>{{i+1}}</td>
+                                <td align="left">{{forma.forma_pago}}</td>
+                                <td align="right">{{forma.valor | number}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

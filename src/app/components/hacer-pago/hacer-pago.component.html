@@ -77,7 +77,13 @@
             <div class="col-4">
                 <div class="row">
                     <label for="valorDetalle">Valor</label>
-                    <input type="number" class="form-control" formControlName="valorDetalle" [(ngModel)]="valorDetalle"  placeholder="Valor">
+                    <input type="number" class="form-control" formControlName="valorDetalle" [(ngModel)]="valorDetalle"
+                        placeholder="Valor">
+                </div>
+                <div class="row">
+                    <label for="descuentoDetalle">Descuento</label>
+                    <input type="number" class="form-control" formControlName="descuentoDetalle"
+                        [(ngModel)]="descuentoDetalle" placeholder="Valor del descuento">
                 </div>
                 <div class="row mb-3">
                     <label for="formaPago">Forma de Pago</label>
@@ -86,6 +92,15 @@
                             {{ formaPago.detalle }}
                         </option>
                     </select>
+                </div>
+                <div class="row mb-3" *ngIf="forma_pago=='Permuta'">
+                    <label for="descripcionPermuta">Descripción</label>
+                    <textarea class="form-control" formControlName="descripcionPermuta" rows="2"
+                        [(ngModel)]="descripcionPermuta" placeholder="Descripción de la permuta"></textarea>
+                </div>
+                <div class="row mb-3" *ngIf="forma_pago=='Permuta'">
+                    <label for="archivo">Archivo de soporte</label>
+                    <input class="form-control" type="file" formControlName="archivo" (change)="loadFile($event)">
                 </div>
                 <div class="row">
                     <button class="btn btn-primary" (click)="addValor()">
@@ -98,8 +113,9 @@
                     <thead class="thead-light">
                         <tr>
                             <td align="center">#</td>
-                            <td align="center">Valor</td>
                             <td align="center">Forma de pago</td>
+                            <td align="center">Valor</td>
+                            <td align="center">Descuento</td>
                             <td></td>
                         </tr>
                     </thead>
@@ -108,16 +124,22 @@
                             <td align="center">{{i+1}}</td>
                             <td align="center">{{forma.detalle}}</td>
                             <td align="center">{{forma.valor | number}}</td>
-                            <td><a [routerLink]="['/hacerPago', id]" class="secondary-content" (click)="delValor(i, $event)">
+                            <td align="center">{{forma.descuento | number}}</td>
+                            <td><a [routerLink]="['/hacerPago', id]" class="secondary-content"
+                                    (click)="delValor(i, $event)">
                                     <i class="fa fa-trash"></i>
                                 </a>
+                                &nbsp;
+                                <a *ngIf="forma.detalle === 'Permuta'" [routerLink]="['/hacerPago', id]"
+                                    class="secondary-content"><i (click)="getPermuta(forma)" class="fa fa-info-circle"
+                                        data-toggle="modal" data-target="#showPermuta"></i></a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-    <hr>
+        <hr>
         <div class="row">
             <div class="col-4">
                 <div class="form-group">
@@ -128,9 +150,9 @@
             </div>
             <div class="col-4">
                 <div class="form-group">
-                    <label for="descuento">Descuento</label>
+                    <label for="descuento">Total Descuento</label>
                     <input type="number" class="form-control" formControlName="descuento" [(ngModel)]="pago.descuento"
-                        placeholder="Valor descuento">
+                        placeholder="Valor descuento" readonly="true">
                 </div>
             </div>
             <div class="col-4">
@@ -174,4 +196,45 @@
             </div>
         </div>
     </form>
+</div>
+
+<!--Ventana modal ver permuta-->
+<div class="modal fade" id="showPermuta" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ver información de la permuta</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <p><b>Proyecto:</b> {{datosLote.proyecto}}</p>
+                        </div>
+                        <div class="col-4">
+                            <p><b>Numero:</b> {{datosLote.numero}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <p><b>Valor:</b> {{infoPermuta.valor}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <p><b>Descripción de la permuta: </b>{{infoPermuta.descripcion}}</p>
+                    </div>
+
+                    <div class="col-6">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
 </div>
